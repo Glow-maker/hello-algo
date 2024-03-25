@@ -6,7 +6,8 @@ import pandas as pd
 以 任意顺序 返回结果表。
 """
 
-def no_sales_person_for_red_company(sales_person, company, orders):
+
+def no_sales_person_for_red_company():
     data = [[1, 'John', 100000, 6, '4/1/2006'], [2, 'Amy', 12000, 5, '5/1/2010'], [3, 'Mark', 65000, 12, '12/25/2008'],
             [4, 'Pam', 25000, 25, '1/1/2005'], [5, 'Alex', 5000, 10, '2/3/2007']]
     sales_person = pd.DataFrame(data, columns=['sales_id', 'name', 'salary', 'commission_rate', 'hire_date']).astype(
@@ -26,14 +27,19 @@ def no_sales_person_for_red_company(sales_person, company, orders):
     # df_out = df_com[df_com['name_y'] == 'RED']['name_x'].drop_duplicates()
     # return df_out
     # return df_com[df_com['name'] != 'RED']['name'].drop_duplicates()
-    return sales_person[~sales_person['sales_id'].isin(orders[orders['com_id'].isin(company[company['name'] == 'RED']['com_id'])]['sales_id'])]['name']
+    return sales_person[~sales_person['sales_id'].isin(
+        orders[orders['com_id'].isin(company[company['name'] == 'RED']['com_id'])]['sales_id'])]['name']
 
 
 def sale_person(sales_person: pd.DataFrame, company: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFrame:
     df1 = sales_person.merge(orders, on='sales_id', how='left')
-    df2 = df1.merge(company, on='com_id', how='left').groupby('name_x').filter(lambda x: 'RED' not in x['name_y'].values)
+    df2 = (df1.merge(company, on='com_id', how='left')
+           .groupby('name_x').filter(lambda x: 'RED' not in x['name_y'].values))
     df3 = df2[['name_x']].rename(columns={'name_x': 'name'}).drop_duplicates()
-    df1 = sales_person.merge(orders, on='sales_id', how='left').merge(company, on='com_id', how='left').groupby('name_X').filter(lambda x: True if 'RED' not in x['name_y'].values else False)
+
+    # df1 = (sales_person.merge(orders, on='sales_id', how='left')
+    #        .merge(company, on='com_id', how='left')
+    #        .groupby('name_X').filter(lambda x: True if 'RED' not in x['name_y'].values else False))
     return df3
 
 
@@ -58,4 +64,3 @@ def accepted_candidates() -> pd.DataFrame:
 if __name__ == '__main__':
 
     accepted_candidates()
-
